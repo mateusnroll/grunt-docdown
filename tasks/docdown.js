@@ -7,18 +7,18 @@
  */
 
 'use strict';
+var marked = require('marked');
+var async = require('async');
 
 module.exports = function(grunt) {
 
-  // Please see the Grunt documentation for more information regarding task
-  // creation: http://gruntjs.com/creating-tasks
-
   grunt.registerMultiTask('docdown', 'Generate documentation from markdown files', function() {
     // Merge task-specific and/or target-specific options with these defaults.
-    var options = this.options({
-      punctuation: '.',
-      separator: ', '
-    });
+    var options = this.options({});
+    var done = this.async();
+
+
+    createNavigation(this.files);
 
     // Iterate over all specified file groups.
     this.files.forEach(function(f) {
@@ -34,17 +34,39 @@ module.exports = function(grunt) {
       }).map(function(filepath) {
         // Read file source.
         return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
+      });
+      
+      src = marked(src[0]);
 
-      // Handle options.
-      src += options.punctuation;
+      f.dest = f.dest.replace('.md', '.html');
 
-      // Write the destination file.
       grunt.file.write(f.dest, src);
 
-      // Print a success message.
       grunt.log.writeln('File "' + f.dest + '" created.');
     });
   });
 
 };
+
+var createNavigation = function (files, callback) {
+  var pattern = new RegExp(/[/]*[0-9]*_/g);
+  var navigationFiles = [];
+
+  async.each(files, 
+    function(file,callback){
+      updateNaming(file.dest, 
+        function(string){
+          navigationFiles.push(string);
+          callback();
+        });
+    },
+    function(err){
+      console.log(navigationFiles);
+    }
+  );
+}
+
+var updateNaming = function(string, callback) {
+  var pattern = new RegExp(/[/]*[0-9]*_/g);
+  callback(string.replace(pattern, '/').replace('.md', '.html'));
+}
