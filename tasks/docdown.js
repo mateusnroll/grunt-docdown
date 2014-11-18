@@ -25,7 +25,8 @@ module.exports = function(grunt) {
         indexTemplate,
         navigationTemplatePath = options.assets+'/templates/navigation.hbs',
         navigationTemplate,
-        navigationHtml;
+        navigationHtml,
+        assetsDestination      = this.files[0].orig.dest+'assets';
 
     async.series([
       // Instanciate templates and stuff
@@ -53,6 +54,7 @@ module.exports = function(grunt) {
 
       // Create files
       function(callback) {
+        grunt.log.writeln('\n-------\nCreating pages...');
         async.each(files,
           // Input file into template and create it
           function(file, cb) {
@@ -87,9 +89,27 @@ module.exports = function(grunt) {
             return callback(null, 'files');
           }
         );
+      },
+
+      // Copy asset files
+      function(callback) {
+        var assetsPattern     = [ options.assets+'/**/*{.js,.css}' ];
+
+        grunt.log.writeln('\n-------\nCopying assets...');
+
+        grunt.file.expand(assetsPattern).forEach(function(filepath){
+          var destinationPath = assetsDestination+filepath.replace(options.assets, '');
+          grunt.file.copy(filepath, destinationPath);
+          grunt.log.writeln('Asset "' + destinationPath + '" created.');
+        });
+        
+        callback(null, 'copy assets');
       }
 
-    ],function(err, results){});
+    ],function(err, results){
+      if(err) grunt.log.writeln('Something went wrong. Error:\n'+error);
+      grunt.log.writeln('\n');
+    });
 
   });
 
@@ -138,7 +158,6 @@ var createNavigation = function (files, callback) {
   },
 
   function(err){
-    console.log(navigation);
     return callback(navigation);
   }
   );
