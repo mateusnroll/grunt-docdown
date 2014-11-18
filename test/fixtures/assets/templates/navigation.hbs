@@ -1,1 +1,16 @@
-<h1>{{title}}</h1>
+{{#each this}}
+  
+  {{#if files}}
+  
+    <p>{{title}}</p>
+    {{#each files}}
+      <a href="{{href}}">{{title}}</a>
+    {{/each}}    
+
+  {{else}}
+
+    <a href="{{href}}">{{title}}</a>
+
+  {{/if}}
+
+{{/each}}
