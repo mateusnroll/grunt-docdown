@@ -7,10 +7,11 @@
  */
 
 'use strict';
-var marked     = require('marked');
-var async      = require('async');
-var handlebars = require('handlebars');
-var _          = require('underscore');
+var marked      = require('marked');
+var async       = require('async');
+var handlebars  = require('handlebars');
+var _           = require('underscore');
+var frontMatter = require('yaml-front-matter');
 
 module.exports = function(grunt) {
 
@@ -53,21 +54,24 @@ module.exports = function(grunt) {
       // Create files
       function(callback) {
         async.each(files,
+          // Input file into template and create it
           function(file, cb) {
             var markdownSource = file.src
             .filter(function(filepath) {
               if (!grunt.file.exists(filepath)) {
                 grunt.log.warn('Source file "' + filepath + '" not found.');
                 return false;
-              } 
+              }
               else return true;
             })
             .map(function(filepath) {
               return grunt.file.read(filepath);
             });
-            markdownSource = marked(markdownSource[0]);
-          
-            var html = indexTemplate({title: 'Test'});
+
+            var page     = frontMatter.loadFront(markdownSource),
+                pageHtml = marked(page.__content);
+
+            var html = indexTemplate(page);
                 html = html.replace('<#content>', markdownSource);
                 html = html.replace('<#navigation>', navigationHtml);
 
@@ -78,6 +82,7 @@ module.exports = function(grunt) {
             });
           },
 
+          // Return the callback when completed
           function(error) {
             return callback(null, 'files');
           }
