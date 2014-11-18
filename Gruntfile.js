@@ -33,12 +33,12 @@ module.exports = function(grunt) {
       default_options: {
         
         options: {
-          templates: 'base/templates'
+          assets: 'test/fixtures/assets'
         },
 
         files: [{
           expand: true,
-          cwd: 'test/fixtures',
+          cwd: 'test/fixtures/content',
           src: '**/*.md',
           dest: 'tmp/'
         }]
