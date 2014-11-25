@@ -123,6 +123,8 @@ module.exports = function(grunt) {
       if(err) grunt.log.writeln('Something went wrong. Error:\n'+error);
       grunt.log.writeln('\n');
     });
+  
+    done();
 
   });
 
