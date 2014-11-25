@@ -8,7 +8,7 @@ This plugin requires Grunt `~0.4.5`
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
 
 ```shell
-npm install grunt-docdown --save-dev
+npm install grunt-docdown --save
 ```
 
 Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
@@ -20,70 +20,33 @@ grunt.loadNpmTasks('grunt-docdown');
 ## The "docdown" task
 
 ### Overview
-In your project's Gruntfile, add a section named `docdown` to the data object passed into `grunt.initConfig()`.
+In your project's Gruntfile, add a section named `docdown` to the data object passed into `grunt.initConfig()`. Use the `files` object to point to your documentation folder. You can see a sample folder at `test/fixtures/content`.
 
 ```js
 grunt.initConfig({
   docdown: {
-    options: {
-      // Task-specific options go here.
+      default_options: {
+        options: {
+          assets: 'test/fixtures/assets'
+        },
+        files: [{
+          expand: true,
+          cwd: 'test/fixtures/content',
+          src: '**/*.*',
+          dest: 'tmp/'
+        }]
+      }
     },
-    your_target: {
-      // Target-specific file lists and/or options go here.
-    },
-  },
 });
 ```
 
 ### Options
 
-#### options.separator
+#### options.assets
 Type: `String`
-Default value: `',  '`
+Required: `Yes`
 
-A string value that is used to do something with whatever.
-
-#### options.punctuation
-Type: `String`
-Default value: `'.'`
-
-A string value that is used to do something else with whatever else.
-
-### Usage Examples
-
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
-
-```js
-grunt.initConfig({
-  docdown: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
-```
-
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
-
-```js
-grunt.initConfig({
-  docdown: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
-```
-
-## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
+The folder that holds you asset files. You can use the files in `test/fixtures/assets` as a base and build your own theme.
 
 ## Release History
 _(Nothing yet)_
