@@ -87,7 +87,7 @@ module.exports = function(grunt) {
                 pageHtml = marked(page.__content);
 
             var html = indexTemplate(page);
-                html = html.replace('<#content>', markdownSource);
+                html = html.replace('<#content>', pageHtml);
                 html = html.replace('<#navigation>', navigationHtml);
 
             updateNaming(file, function(fileDestination){
