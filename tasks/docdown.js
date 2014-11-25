@@ -13,6 +13,8 @@ var handlebars  = require('handlebars');
 var _           = require('underscore');
 var frontMatter = require('yaml-front-matter');
 
+var numberReplacePattern = new RegExp(/[/]*[0-9]*_/g);
+
 module.exports = function(grunt) {
 
   grunt.registerMultiTask('docdown', 'Generate documentation from markdown files', function() {
@@ -58,6 +60,17 @@ module.exports = function(grunt) {
         async.each(files,
           // Input file into template and create it
           function(file, cb) {
+            var fileExtension = file.src[0].split('.');
+            fileExtension = fileExtension[fileExtension.length-1];
+
+            // If file is not markdown, just copy it as an asset
+            if (fileExtension != "md") {
+              grunt.file.copy(file.src[0], file.dest.replace(numberReplacePattern, '/'));
+              grunt.log.writeln('Asset "' + file.dest.replace(numberReplacePattern, '/') + '" created.');
+              return cb();
+            }
+
+
             var markdownSource = file.src
             .filter(function(filepath) {
               if (!grunt.file.exists(filepath)) {
@@ -79,8 +92,8 @@ module.exports = function(grunt) {
 
             updateNaming(file, function(fileDestination){
               grunt.file.write(fileDestination, html);
-              grunt.log.writeln('File "' + fileDestination + '" created.');
-              cb();
+              grunt.log.writeln('File  "' + fileDestination + '" created.');
+              return cb();
             });
           },
 
@@ -164,10 +177,9 @@ var createNavigation = function (files, callback) {
 }
 
 var updateNaming = function(file, callback) {
-  var pattern = new RegExp(/[/]*[0-9]*_/g);
   var fileName = file.dest;
 
-  fileName = fileName.replace(pattern, '/');
+  fileName = fileName.replace(numberReplacePattern, '/');
   fileName = fileName.replace('.md', '.html');
 
   callback(fileName);
